@@ -1,20 +1,21 @@
-# 절대 색감 테스트 게임
+# 🎨 절대 색감 테스트 게임
 
-## 프로젝트 소개
-미묘하게 다른 색상을 찾아내는 온라인 색감 테스트 게임입니다. 레벨이 올라갈수록 색상 차이가 미묘해져 난이도가 높아지며, 제한 시간 내에 정답을 찾아야 합니다.
+## 📌 프로젝트 소개
+미묘하게 다른 색상을 찾아내는 온라인 색감 테스트 게임입니다. 레벨이 올라갈수록 색상 차이가 미묘해져 난이도가 높아지며, 제한 시간 내에 정답을 찾아야 합니다. 콤보 시스템과 피버 모드로 긴장감 넘치는 플레이가 가능하며, Supabase를 활용한 실시간 랭킹 시스템을 제공합니다.
 
-## 바이브코딩 정보
-- **소요 시간**: 약 65분
+## ⏱️ 바이브코딩 정보
+- **총 소요 시간**: 약 90분
 - **개발 방식**: AI 페어 프로그래밍 (Claude Code)
-- **프롬프트 수**: 16개
+- **프롬프트 수**: 19개
+- **개발 날짜**: 2025년 10월 4일
 
-## 기술 스택
-- HTML5
-- CSS3
-- Vanilla JavaScript
-- requestAnimationFrame (부드러운 애니메이션)
+## 🛠️ 기술 스택
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Backend**: Supabase (Database & Authentication)
+- **Animation**: requestAnimationFrame (부드러운 애니메이션)
+- **Deployment**: GitHub Pages / Vercel (정적 호스팅)
 
-## 주요 기능
+## ✨ 주요 기능
 - 레벨별 난이도 증가 (색상 차이 감소, 그리드 크기 증가)
 - 실시간 타이머 바 (시각적 시간 표시)
 - 정답 시 시간 증가 (+15%)
@@ -24,6 +25,11 @@
   - 3초 내 연속 정답 시 콤보 증가
   - 5콤보 달성 시 피버 모드 진입 (점수 2배)
   - 오답 또는 시간 지체 시 콤보 리셋
+- 🏆 **랭킹 시스템 (Supabase 연동)**
+  - 게임 종료 시 닉네임 입력 후 랭킹 등록
+  - TOP 10 랭킹 실시간 조회
+  - 메인 화면에서 TOP 3 미리보기
+  - 메달 시스템 (🥇🥈🥉)
 - 게임 시작/종료 화면
 - 최종 결과 통계
 - 모바일 반응형 디자인
@@ -39,7 +45,9 @@
 
 ---
 
-## 개발 과정 (프롬프트 히스토리)
+## 📝 개발 과정 (프롬프트 히스토리)
+
+> 총 19개의 프롬프트를 통해 게임을 완성했습니다. 각 프롬프트의 원문과 처리 내용을 기록합니다.
 
 ### 1. 프로젝트 초기 설정
 **프롬프트:**
@@ -252,14 +260,98 @@
 - 피버 모드 재진입 시 레이아웃 일관성 유지
   - `enterFeverMode`에서 `margin-bottom` 복원 로직 추가
 
+### 17. Supabase 랭킹 시스템 구현
+**프롬프트:**
+> 랭킹 기능을 만들고 싶어 supabase 연동해서. 필요한 작업과 내가 해야하는 작업들을 알려주겠니
+
+**처리 내용:**
+- Supabase 클라이언트 라이브러리 추가 (CDN)
+- Supabase 초기화 코드 작성 (URL, API Key)
+- 게임오버 화면에 닉네임 입력 UI 추가
+- 점수 저장 함수 구현 (`submitScore`)
+- 랭킹 조회 함수 구현 (`showRanking`)
+- 랭킹 화면 UI 생성
+  - TOP 10 랭킹 테이블
+  - 1~3위 메달 표시 (🥇🥈🥉)
+  - 플레이어명, 점수, 레벨 표시
+- 랭킹 화면 스타일링 (반응형)
+- 버튼 추가: "랭킹 등록", "🏆 랭킹 보기", "돌아가기"
+
+### 18. 메인 화면 랭킹 미리보기 추가
+**프롬프트:**
+> 메인페이지에서 현재 랭킹 실황을 볼 수 있었으면 해
+
+**처리 내용:**
+- 시작 화면에 랭킹 미리보기 섹션 추가
+- TOP 3 랭킹 자동 로드 (`loadRankingPreview`)
+- 메달과 점수를 간결하게 표시하는 프리뷰 카드 디자인
+- 게임 재시작 시 랭킹 자동 새로고침
+- 그라데이션 배경의 미리보기 컨테이너 스타일링
+- 반응형 레이아웃 적용 (모바일 대응)
+
+### 19. Supabase 보안 관련 질문
+**프롬프트:**
+> 지금 수파베이스 키가 너무 공개적으로 js 파일에 명시되어있는데, env로 떼는 방법 없어?
+
+**처리 내용:**
+- Supabase anon key는 공개되어도 안전함을 안내
+- RLS(Row Level Security) 정책으로 보안 처리됨을 설명
+- 환경변수 사용을 위한 백엔드 추가 방법 제시
+- 현재 구조 유지 권장 (정적 사이트에 적합)
+
 ---
 
-## 실행 방법
+## 🚀 실행 방법
+
+### 로컬 실행
 ```bash
 # 파일을 다운로드한 후
 open index.html
 # 또는 브라우저에서 index.html 파일 열기
 ```
 
-## 라이선스
+### Supabase 설정 (랭킹 기능 사용 시)
+1. [Supabase](https://supabase.com) 프로젝트 생성
+2. SQL Editor에서 테이블 생성:
+```sql
+CREATE TABLE rankings (
+  id BIGSERIAL PRIMARY KEY,
+  player_name TEXT NOT NULL,
+  score INTEGER NOT NULL,
+  level INTEGER NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_rankings_score ON rankings(score DESC);
+```
+3. RLS 정책 설정:
+```sql
+CREATE POLICY "Anyone can read rankings"
+ON rankings FOR SELECT TO public USING (true);
+
+CREATE POLICY "Anyone can insert rankings"
+ON rankings FOR INSERT TO public WITH CHECK (true);
+```
+4. `game.js`에서 Supabase URL과 anon key 교체
+
+---
+
+## 📊 게임 통계
+- **최고 난이도**: 20레벨 이상 도달 가능
+- **콤보 시스템**: 3초 내 정답 시 콤보 증가
+- **피버 모드**: 5콤보 달성 시 점수 2배
+- **찬스 제공**: 게임당 3회
+
+## 📸 스크린샷
+*(스크린샷을 추가하세요)*
+
+## 🔗 링크
+- **게임 플레이**: [여기에 배포 URL 추가]
+- **개발자**: [GitHub 프로필]
+
+## 📄 라이선스
 MIT License
+
+---
+
+**🎨 Made with Claude Code - AI Pair Programming**

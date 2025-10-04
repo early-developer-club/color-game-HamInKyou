@@ -5,12 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>절대 색감 게임</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
         <div id="start-screen">
             <h1>절대 색감 테스트</h1>
             <p class="description">미묘하게 다른 색상을 찾아보세요!</p>
+            <div class="ranking-preview" id="ranking-preview">
+                <h3>🏆 현재 TOP 3</h3>
+                <div id="preview-list" class="preview-list">
+                    <div class="loading">랭킹을 불러오는 중...</div>
+                </div>
+            </div>
             <button id="start-btn">시작하기!</button>
         </div>
         <div id="game-screen" style="display: none;">
@@ -43,7 +50,19 @@
                     <div class="result-value" id="final-score">0</div>
                 </div>
             </div>
-            <button id="restart-btn">다시 시작</button>
+            <div class="nickname-input-box" id="nickname-box">
+                <input type="text" id="nickname-input" placeholder="닉네임을 입력하세요" maxlength="10">
+                <button id="submit-score-btn">랭킹 등록</button>
+            </div>
+            <div class="button-group">
+                <button id="view-ranking-btn">🏆 랭킹 보기</button>
+                <button id="restart-btn">다시 시작</button>
+            </div>
+        </div>
+        <div id="ranking-screen" style="display: none;">
+            <h1>🏆 랭킹</h1>
+            <div id="ranking-list"></div>
+            <button id="back-to-game-btn">돌아가기</button>
         </div>
     </div>
     <script src="game.js"></script>

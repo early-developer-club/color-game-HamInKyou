@@ -1,3 +1,8 @@
+// Supabase 초기화
+const SUPABASE_URL = 'https://ijyvnvhpjgyfopjdpesr.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqeXZudmhwamd5Zm9wamRwZXNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NjIwNzQsImV4cCI6MjA3NTEzODA3NH0.r4u2vaWEEcPh6kj20Y6kPM3cJInpZ5YfEEEzsfZBqYI';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 class ColorGame {
     constructor() {
         this.level = 1;
@@ -32,10 +37,24 @@ class ColorGame {
         this.gameoverScreen = document.getElementById('gameover-screen');
         this.finalLevel = document.getElementById('final-level');
         this.finalScore = document.getElementById('final-score');
+        this.nicknameInput = document.getElementById('nickname-input');
+        this.submitScoreBtn = document.getElementById('submit-score-btn');
+        this.viewRankingBtn = document.getElementById('view-ranking-btn');
+        this.rankingScreen = document.getElementById('ranking-screen');
+        this.rankingList = document.getElementById('ranking-list');
+        this.backToGameBtn = document.getElementById('back-to-game-btn');
+        this.nicknameBox = document.getElementById('nickname-box');
+        this.previewList = document.getElementById('preview-list');
 
         this.startBtn.addEventListener('click', () => this.startGame());
         this.restartBtn.addEventListener('click', () => this.restart());
         this.chanceBtn.addEventListener('click', () => this.useChance());
+        this.submitScoreBtn.addEventListener('click', () => this.submitScore());
+        this.viewRankingBtn.addEventListener('click', () => this.showRanking());
+        this.backToGameBtn.addEventListener('click', () => this.backToGame());
+
+        // 시작 화면에서 랭킹 미리보기 로드
+        this.loadRankingPreview();
     }
 
     startGame() {
@@ -298,6 +317,115 @@ class ColorGame {
         }, 1000);
     }
 
+    async submitScore() {
+        const nickname = this.nicknameInput.value.trim();
+
+        if (!nickname) {
+            alert('닉네임을 입력해주세요!');
+            return;
+        }
+
+        try {
+            const { data, error } = await supabase
+                .from('rankings')
+                .insert([
+                    {
+                        player_name: nickname,
+                        score: this.score,
+                        level: this.level
+                    }
+                ]);
+
+            if (error) throw error;
+
+            alert('랭킹에 등록되었습니다! 🎉');
+            this.nicknameBox.style.display = 'none';
+            this.nicknameInput.value = '';
+        } catch (error) {
+            console.error('Error submitting score:', error);
+            alert('랭킹 등록 중 오류가 발생했습니다.');
+        }
+    }
+
+    async showRanking() {
+        try {
+            const { data, error } = await supabase
+                .from('rankings')
+                .select('*')
+                .order('score', { ascending: false })
+                .limit(10);
+
+            if (error) throw error;
+
+            this.gameoverScreen.style.display = 'none';
+            this.rankingScreen.style.display = 'block';
+            this.displayRankings(data);
+        } catch (error) {
+            console.error('Error fetching rankings:', error);
+            alert('랭킹을 불러오는 중 오류가 발생했습니다.');
+        }
+    }
+
+    displayRankings(rankings) {
+        if (!rankings || rankings.length === 0) {
+            this.rankingList.innerHTML = '<div class="no-ranking">아직 등록된 랭킹이 없습니다.</div>';
+            return;
+        }
+
+        let html = '<div class="ranking-table">';
+        rankings.forEach((rank, index) => {
+            const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}위`;
+            html += `
+                <div class="ranking-item">
+                    <div class="rank">${medal}</div>
+                    <div class="player-name">${rank.player_name}</div>
+                    <div class="player-score">${rank.score}점</div>
+                    <div class="player-level">Lv.${rank.level}</div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        this.rankingList.innerHTML = html;
+    }
+
+    async loadRankingPreview() {
+        try {
+            const { data, error } = await supabase
+                .from('rankings')
+                .select('*')
+                .order('score', { ascending: false })
+                .limit(3);
+
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                this.previewList.innerHTML = '<div class="no-ranking-preview">아직 랭킹이 없습니다</div>';
+                return;
+            }
+
+            let html = '';
+            data.forEach((rank, index) => {
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
+                html += `
+                    <div class="preview-item">
+                        <span class="preview-medal">${medal}</span>
+                        <span class="preview-name">${rank.player_name}</span>
+                        <span class="preview-score">${rank.score}점</span>
+                    </div>
+                `;
+            });
+            this.previewList.innerHTML = html;
+        } catch (error) {
+            console.error('Error loading ranking preview:', error);
+            this.previewList.innerHTML = '<div class="no-ranking-preview">랭킹 로드 실패</div>';
+        }
+    }
+
+    backToGame() {
+        this.rankingScreen.style.display = 'none';
+        this.gameoverScreen.style.display = 'block';
+    }
+
     restart() {
         this.stopTimer();
         this.level = 1;
@@ -312,9 +440,15 @@ class ColorGame {
         this.exitFeverMode();
         this.message.textContent = '';
         this.gameoverScreen.style.display = 'none';
+        this.rankingScreen.style.display = 'none';
         this.gameScreen.style.display = 'none';
         this.startScreen.style.display = 'block';
         this.gameBoard.style.pointerEvents = 'auto';
+        this.nicknameBox.style.display = 'block';
+        this.nicknameInput.value = '';
+
+        // 랭킹 미리보기 새로고침
+        this.loadRankingPreview();
     }
 }
 
