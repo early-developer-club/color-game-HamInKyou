@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>절대 색감 게임</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="start-screen">
+            <h1>절대 색감 테스트</h1>
+            <p class="description">미묘하게 다른 색상을 찾아보세요!</p>
+            <button id="start-btn">시작하기!</button>
+        </div>
+        <div id="game-screen" style="display: none;">
+            <h1>절대 색감 테스트</h1>
+            <div class="game-info">
+                <div class="level">레벨: <span id="level">1</span></div>
+                <div class="score">점수: <span id="score">0</span></div>
+            </div>
+            <div class="timer-bar-container">
+                <div class="timer-bar" id="timer-bar"></div>
+            </div>
+            <div id="game-board"></div>
+            <div class="message" id="message"></div>
+        </div>
+        <div id="gameover-screen" style="display: none;">
+            <h1>게임 오버!</h1>
+            <div class="result-box">
+                <div class="result-item">
+                    <div class="result-label">최종 레벨</div>
+                    <div class="result-value" id="final-level">0</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">최종 점수</div>
+                    <div class="result-value" id="final-score">0</div>
+                </div>
+            </div>
+            <button id="restart-btn">다시 시작</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
