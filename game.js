@@ -8,6 +8,12 @@ class ColorGame {
         this.animationTimer = null;
         this.lastUpdateTime = null;
         this.chancesLeft = 3; // 찬스 횟수
+        this.combo = 0; // 콤보 카운트
+        this.isFeverMode = false; // 피버 모드 여부
+        this.feverThreshold = 5; // 피버 모드 진입 콤보 수
+        this.roundStartTime = null; // 라운드 시작 시간
+        this.comboTimeLimit = 3000; // 3초 이내에 정답 맞춰야 콤보 유지 (ms)
+
         this.gameBoard = document.getElementById('game-board');
         this.levelDisplay = document.getElementById('level');
         this.scoreDisplay = document.getElementById('score');
@@ -17,6 +23,10 @@ class ColorGame {
         this.startBtn = document.getElementById('start-btn');
         this.chanceBtn = document.getElementById('chance-btn');
         this.chanceCount = document.getElementById('chance-count');
+        this.comboDisplay = document.getElementById('combo-display');
+        this.comboCount = document.getElementById('combo');
+        this.feverContainer = document.getElementById('fever-container');
+        this.feverBar = document.getElementById('fever-bar');
         this.startScreen = document.getElementById('start-screen');
         this.gameScreen = document.getElementById('game-screen');
         this.gameoverScreen = document.getElementById('gameover-screen');
@@ -154,23 +164,49 @@ class ColorGame {
             square.addEventListener('click', () => this.handleSquareClick(square));
             this.gameBoard.appendChild(square);
         }
+
+        // 라운드 시작 시간 기록
+        this.roundStartTime = Date.now();
     }
 
     handleSquareClick(square) {
         if (square.dataset.different === 'true') {
-            // 정답! - 시간 증가
-            this.score += this.level * 10;
+            // 정답! - 콤보 체크
+            const timeElapsed = Date.now() - this.roundStartTime;
+
+            if (timeElapsed <= this.comboTimeLimit) {
+                // 시간 내에 정답 - 콤보 증가
+                this.combo++;
+                this.updateComboDisplay();
+
+                // 피버 모드 체크
+                if (this.combo >= this.feverThreshold && !this.isFeverMode) {
+                    this.enterFeverMode();
+                }
+            } else {
+                // 시간 초과 - 콤보 리셋
+                this.resetCombo();
+            }
+
+            // 점수 계산 (피버 모드면 2배)
+            const baseScore = this.level * 10;
+            const scoreToAdd = this.isFeverMode ? baseScore * 2 : baseScore;
+            this.score += scoreToAdd;
+
             this.level++;
             this.timeLeft = Math.min(100, this.timeLeft + 15); // 15% 증가
             this.updateDisplay();
-            this.showMessage('정답! 🎉', 'success');
+
+            const message = this.isFeverMode ? `정답! 🎉 +${scoreToAdd} (FEVER x2)` : '정답! 🎉';
+            this.showMessage(message, 'success');
 
             setTimeout(() => {
                 this.message.textContent = '';
                 this.createBoard();
             }, 500);
         } else {
-            // 오답 - 시간 감소
+            // 오답 - 콤보 리셋 및 시간 감소
+            this.resetCombo();
             this.timeLeft = Math.max(0, this.timeLeft - 20); // 20% 감소
             this.showMessage('틀렸습니다! -20%', 'warning');
 
@@ -181,6 +217,38 @@ class ColorGame {
             if (this.timeLeft <= 0) {
                 this.gameOver('게임 오버! 😢');
             }
+        }
+    }
+
+    updateComboDisplay() {
+        if (this.combo > 0) {
+            this.comboDisplay.style.display = 'block';
+            this.comboCount.textContent = this.combo;
+        } else {
+            this.comboDisplay.style.display = 'none';
+        }
+    }
+
+    enterFeverMode() {
+        this.isFeverMode = true;
+        this.feverContainer.style.opacity = '1';
+        this.feverContainer.style.maxHeight = '30px';
+        this.feverContainer.style.marginBottom = '20px';
+        this.showMessage('🔥 FEVER MODE! 🔥', 'fever');
+    }
+
+    exitFeverMode() {
+        this.isFeverMode = false;
+        this.feverContainer.style.opacity = '0';
+        this.feverContainer.style.maxHeight = '0';
+        this.feverContainer.style.marginBottom = '0';
+    }
+
+    resetCombo() {
+        this.combo = 0;
+        this.updateComboDisplay();
+        if (this.isFeverMode) {
+            this.exitFeverMode();
         }
     }
 
@@ -236,8 +304,12 @@ class ColorGame {
         this.score = 0;
         this.timeLeft = 100;
         this.chancesLeft = 3;
+        this.combo = 0;
+        this.isFeverMode = false;
         this.updateDisplay();
         this.updateChanceDisplay();
+        this.updateComboDisplay();
+        this.exitFeverMode();
         this.message.textContent = '';
         this.gameoverScreen.style.display = 'none';
         this.gameScreen.style.display = 'none';

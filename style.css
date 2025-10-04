@@ -44,7 +44,7 @@ h1 {
     font-weight: bold;
 }
 
-.level, .score, .timer {
+.level, .score, .timer, .combo {
     padding: 10px 20px;
     background: #f0f0f0;
     border-radius: 10px;
@@ -56,6 +56,26 @@ h1 {
 
 .timer span {
     color: #ff9800;
+}
+
+.combo {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    color: white;
+    animation: combo-pulse 0.5s ease-in-out infinite alternate;
+}
+
+.combo span {
+    color: white;
+    font-weight: bold;
+}
+
+@keyframes combo-pulse {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.05);
+    }
 }
 
 .chance-btn {
@@ -161,6 +181,80 @@ h1 {
 .message.info {
     color: #2196f3;
 }
+
+.message.fever {
+    color: #ff6b6b;
+    font-size: 2em;
+    animation: fever-shake 0.3s ease-in-out infinite;
+}
+
+@keyframes fever-shake {
+    0%, 100% {
+        transform: rotate(-2deg);
+    }
+    50% {
+        transform: rotate(2deg);
+    }
+}
+
+.fever-bar-container {
+    width: 100%;
+    height: 30px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.5);
+    animation: fever-glow 1s ease-in-out infinite alternate;
+    opacity: 0;
+    max-height: 0;
+    transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease;
+}
+
+.fever-bar-container[style*="display: block"] {
+    opacity: 1;
+    max-height: 30px;
+}
+
+@keyframes fever-glow {
+    0% {
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.5);
+    }
+    100% {
+        box-shadow: 0 4px 25px rgba(255, 107, 107, 0.8);
+    }
+}
+
+.fever-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #ffd700, #ff8e53, #ffd700);
+    background-size: 200% 100%;
+    animation: fever-slide 2s linear infinite;
+}
+
+@keyframes fever-slide {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 200% 50%;
+    }
+}
+
+.fever-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 1.2em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
 
 #restart-btn {
     padding: 15px 40px;
