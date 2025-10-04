@@ -92,41 +92,35 @@ class ColorGame {
 
     getGridSize() {
         // 레벨에 따라 그리드 크기 증가 (2x2 -> 3x3 -> 4x4 ...)
-        return Math.min(2 + Math.floor(this.level / 2), 8);
+        // 5레벨마다 크기 증가로 변경하여 난이도 완화
+        return Math.min(2 + Math.floor(this.level / 5), 6);
     }
 
     getColorDifference() {
         // 레벨이 올라갈수록 색상 차이가 미묘해짐
-        // 레벨 1: 50, 레벨 2: 45, 레벨 3: 40 ...
-        return Math.max(50 - (this.level - 1) * 5, 5);
+        // 레벨 1: 80, 레벨 2: 77, 레벨 3: 74 ... (3씩 감소로 변경)
+        return Math.max(80 - (this.level - 1) * 3, 15);
     }
 
     generateColor() {
-        const r = Math.floor(Math.random() * 256);
-        const g = Math.floor(Math.random() * 256);
-        const b = Math.floor(Math.random() * 256);
-        return { r, g, b };
+        const h = Math.floor(Math.random() * 360);
+        const s = 50 + Math.floor(Math.random() * 50); // 50-100%
+        const l = 40 + Math.floor(Math.random() * 40); // 40-80%
+        return { h, s, l };
     }
 
     getDifferentColor(baseColor, difference) {
-        const colorChannel = Math.floor(Math.random() * 3); // 0: R, 1: G, 2: B
-        const direction = Math.random() > 0.5 ? 1 : -1;
-
         const newColor = { ...baseColor };
 
-        if (colorChannel === 0) {
-            newColor.r = Math.max(0, Math.min(255, baseColor.r + (difference * direction)));
-        } else if (colorChannel === 1) {
-            newColor.g = Math.max(0, Math.min(255, baseColor.g + (difference * direction)));
-        } else {
-            newColor.b = Math.max(0, Math.min(255, baseColor.b + (difference * direction)));
-        }
+        // HSL에서 Hue(색상)를 조정 - 더 극명한 차이
+        const direction = Math.random() > 0.5 ? 1 : -1;
+        newColor.h = (baseColor.h + (difference * direction) + 360) % 360;
 
         return newColor;
     }
 
     colorToString(color) {
-        return `rgb(${color.r}, ${color.g}, ${color.b})`;
+        return `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
     }
 
     createBoard() {
