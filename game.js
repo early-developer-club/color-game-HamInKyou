@@ -7,6 +7,7 @@ class ColorGame {
         this.decreaseRate = 10; // 초당 감소율 (%) - 10초면 끝!
         this.animationTimer = null;
         this.lastUpdateTime = null;
+        this.chancesLeft = 3; // 찬스 횟수
         this.gameBoard = document.getElementById('game-board');
         this.levelDisplay = document.getElementById('level');
         this.scoreDisplay = document.getElementById('score');
@@ -14,6 +15,8 @@ class ColorGame {
         this.message = document.getElementById('message');
         this.restartBtn = document.getElementById('restart-btn');
         this.startBtn = document.getElementById('start-btn');
+        this.chanceBtn = document.getElementById('chance-btn');
+        this.chanceCount = document.getElementById('chance-count');
         this.startScreen = document.getElementById('start-screen');
         this.gameScreen = document.getElementById('game-screen');
         this.gameoverScreen = document.getElementById('gameover-screen');
@@ -22,6 +25,7 @@ class ColorGame {
 
         this.startBtn.addEventListener('click', () => this.startGame());
         this.restartBtn.addEventListener('click', () => this.restart());
+        this.chanceBtn.addEventListener('click', () => this.useChance());
     }
 
     startGame() {
@@ -33,6 +37,7 @@ class ColorGame {
     initGame() {
         this.createBoard();
         this.startTimer();
+        this.updateChanceDisplay();
     }
 
     startTimer() {
@@ -195,12 +200,50 @@ class ColorGame {
         this.scoreDisplay.textContent = this.score;
     }
 
+    updateChanceDisplay() {
+        this.chanceCount.textContent = this.chancesLeft;
+        if (this.chancesLeft === 0) {
+            this.chanceBtn.disabled = true;
+            this.chanceBtn.style.opacity = '0.5';
+            this.chanceBtn.style.cursor = 'not-allowed';
+        } else {
+            this.chanceBtn.disabled = false;
+            this.chanceBtn.style.opacity = '1';
+            this.chanceBtn.style.cursor = 'pointer';
+        }
+    }
+
+    useChance() {
+        if (this.chancesLeft <= 0) return;
+
+        this.chancesLeft--;
+        this.updateChanceDisplay();
+
+        // 다른 색의 타일에 힌트 표시
+        const squares = this.gameBoard.querySelectorAll('.square');
+        squares.forEach(square => {
+            if (square.dataset.different === 'true') {
+                square.classList.add('hint');
+                setTimeout(() => {
+                    square.classList.remove('hint');
+                }, 1000);
+            }
+        });
+
+        this.showMessage('힌트가 표시됩니다! 💡', 'info');
+        setTimeout(() => {
+            this.message.textContent = '';
+        }, 1000);
+    }
+
     restart() {
         this.stopTimer();
         this.level = 1;
         this.score = 0;
         this.timeLeft = 100;
+        this.chancesLeft = 3;
         this.updateDisplay();
+        this.updateChanceDisplay();
         this.message.textContent = '';
         this.gameoverScreen.style.display = 'none';
         this.gameScreen.style.display = 'none';

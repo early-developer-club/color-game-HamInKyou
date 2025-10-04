@@ -30,6 +30,7 @@ h1 {
 .game-info {
     display: flex;
     justify-content: space-around;
+    align-items: center;
     margin-bottom: 30px;
     font-size: 1.2em;
     font-weight: bold;
@@ -47,6 +48,34 @@ h1 {
 
 .timer span {
     color: #ff9800;
+}
+
+.chance-btn {
+    padding: 10px 20px;
+    font-size: 1em;
+    background: #ffd700;
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.chance-btn:hover:not(:disabled) {
+    background: #ffed4e;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.chance-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.chance-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .timer-bar-container {
@@ -88,6 +117,20 @@ h1 {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
+.square.hint {
+    animation: pulse 0.5s ease-in-out 2;
+    box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.8), 0 0 40px 10px rgba(255, 215, 0, 0.4);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
 .message {
     font-size: 1.5em;
     font-weight: bold;
@@ -105,6 +148,10 @@ h1 {
 
 .message.warning {
     color: #ff9800;
+}
+
+.message.info {
+    color: #2196f3;
 }
 
 #restart-btn {
